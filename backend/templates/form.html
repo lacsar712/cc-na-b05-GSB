@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
 <h1>登记巡检</h1>
+<p>当前坎德拉上限：{{ limit.value }}，超过将被拒收。</p>
 {% if error %}<p class="err">{{ error }}</p>{% endif %}
 <form class="card" method="post">
   {% csrf_token %}

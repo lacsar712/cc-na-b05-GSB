@@ -3,7 +3,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
-from inspection.models import Inspection
+from inspection.models import Inspection, LimitChange, LimitSetting, RejectedReading
 from inspection.rules import judge
 
 
@@ -61,6 +61,7 @@ def create_view(request):
     if not _can_write(request.user):
         return HttpResponseForbidden("仅巡检员可登记灯光巡检")
     error = ""
+    limit = LimitSetting.current()
     if request.method == "POST":
         try:
             measured = float(request.POST["measured_cd"])
@@ -72,6 +73,14 @@ def create_view(request):
         except (KeyError, ValueError):
             error = "请填编号和三项数值"
         else:
+            if measured > limit.value:
+                RejectedReading.objects.create(
+                    aid_code=code,
+                    measured_cd=measured,
+                    limit_at_time=limit.value,
+                    submitted_by=request.user.username,
+                )
+                return redirect("rejected")
             verdict, note = judge(measured, required, bearing)
             row = Inspection.objects.create(
                 aid_code=code,
@@ -83,4 +92,41 @@ def create_view(request):
                 created_by=request.user.username,
             )
             return redirect("detail", pk=row.pk)
-    return render(request, "form.html", {"error": error})
+    return render(request, "form.html", {"error": error, "limit": limit})
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def limit_view(request):
+    setting = LimitSetting.current()
+    error = ""
+    if request.method == "POST":
+        if not _can_write(request.user):
+            return HttpResponseForbidden("仅巡检员可调整坎德拉上限")
+        try:
+            new_value = float(request.POST["value"])
+        except (KeyError, ValueError):
+            error = "请填有效的坎德拉数值"
+        else:
+            if new_value != setting.value:
+                LimitChange.objects.create(
+                    old_value=setting.value,
+                    new_value=new_value,
+                    changed_by=request.user.username,
+                )
+                setting.value = new_value
+                setting.updated_by = request.user.username
+                setting.save()
+            return redirect("limit")
+    history = LimitChange.objects.all()
+    return render(
+        request,
+        "limit.html",
+        {"setting": setting, "history": history, "error": error},
+    )
+
+
+@login_required
+def rejected_view(request):
+    rows = RejectedReading.objects.all()
+    return render(request, "rejected.html", {"rows": rows})

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>被拒灯光</h1>
+<table>
+  <thead><tr><th>灯号</th><th>所填亮度</th><th>当时上限</th><th>提交人</th><th>拒绝时刻</th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td>{{ row.aid_code }}</td>
+      <td>{{ row.measured_cd }}</td>
+      <td>{{ row.limit_at_time }}</td>
+      <td>{{ row.submitted_by }}</td>
+      <td>{{ row.rejected_at|date:"Y-m-d H:i:s" }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">没有被拒记录</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

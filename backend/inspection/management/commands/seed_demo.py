@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group, User
 from django.core.management.base import BaseCommand
 
-from inspection.models import Inspection
+from inspection.models import Inspection, LimitSetting
 from inspection.rules import judge
 
 
@@ -20,6 +20,7 @@ class Command(BaseCommand):
             watch.set_password("watch123456")
             watch.save()
         watch.groups.remove(group)
+        LimitSetting.current()
         if Inspection.objects.exists():
             self.stdout.write("already seeded")
             return

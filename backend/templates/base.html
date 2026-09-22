@@ -24,6 +24,8 @@
     {% if user.is_authenticated %}
       <a href="{% url 'list' %}">巡检记录</a>
       {% if can_write %}<a href="{% url 'create' %}">登记</a>{% endif %}
+      <a href="{% url 'rejected' %}">被拒灯光</a>
+      <a href="{% url 'limit' %}">坎德拉上限</a>
       <span style="margin-left:auto">{{ user.username }}</span>
       <a href="{% url 'logout' %}">退出</a>
     {% endif %}
