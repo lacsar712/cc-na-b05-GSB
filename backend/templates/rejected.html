@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}被拒灯光 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>被拒灯光</h1>
+<p class="muted">下表每条都是拒绝当时的留档；“当时上限”是快照，不随后续上限调整而改变。</p>
+<table>
+  <thead><tr><th>灯号</th><th>所填亮度</th><th>当时上限</th><th>填写人</th><th>拒绝时刻</th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td>{{ row.aid_code }}</td>
+      <td class="bad">{{ row.measured_cd|floatformat:-1 }}</td>
+      <td>{{ row.limit_at_rejection|floatformat:-1 }}</td>
+      <td>{{ row.rejected_by }}</td>
+      <td>{{ row.rejected_at|date:"Y-m-d H:i:s" }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">还没有被拒绝的填写</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

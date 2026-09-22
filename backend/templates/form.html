@@ -8,6 +8,7 @@
   <input name="aid_code" />
   <label>实测光强（坎德拉）</label>
   <input name="measured_cd" type="number" step="0.1" />
+  <p class="muted">当前坎德拉上限 {{ limit.value|floatformat:-1 }}，超过上限的填写将被拒绝并记入被拒灯光页。</p>
   <label>要求光强</label>
   <input name="required_cd" type="number" step="0.1" value="1200" />
   <label>方位偏差（度）</label>

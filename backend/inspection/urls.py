@@ -9,4 +9,6 @@ urlpatterns = [
     path("", views.list_view, name="list"),
     path("inspections/new/", views.create_view, name="create"),
     path("inspections/<int:pk>/", views.detail_view, name="detail"),
+    path("rejected/", views.rejected_view, name="rejected"),
+    path("limit/", views.limit_view, name="limit"),
 ]

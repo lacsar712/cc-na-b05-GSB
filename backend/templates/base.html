@@ -16,6 +16,9 @@
     input { width: 100%; padding: 8px; box-sizing: border-box; }
     button { margin-top: 14px; background: #0f3d3e; color: #fff; border: 0; padding: 8px 16px; }
     .err { color: #9b1c1c; }
+    .msg { background: #fff; border-left: 4px solid #0f3d3e; padding: 8px 12px; margin: 0 0 12px; }
+    .msg.err { border-left-color: #9b1c1c; }
+    .muted { color: #5b6b66; font-size: 0.9em; }
   </style>
 </head>
 <body>
@@ -23,11 +26,20 @@
     <strong>航标灯光巡检台</strong>
     {% if user.is_authenticated %}
       <a href="{% url 'list' %}">巡检记录</a>
+      <a href="{% url 'rejected' %}">被拒灯光</a>
+      <a href="{% url 'limit' %}">坎德拉上限</a>
       {% if can_write %}<a href="{% url 'create' %}">登记</a>{% endif %}
       <span style="margin-left:auto">{{ user.username }}</span>
       <a href="{% url 'logout' %}">退出</a>
     {% endif %}
   </header>
-  <main>{% block body %}{% endblock %}</main>
+  <main>
+    {% if messages %}
+      {% for message in messages %}
+        <p class="msg{% if message.level_tag == 'error' %} err{% endif %}">{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% block body %}{% endblock %}
+  </main>
 </body>
 </html>

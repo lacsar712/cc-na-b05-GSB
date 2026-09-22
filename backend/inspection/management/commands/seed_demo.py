@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group, User
 from django.core.management.base import BaseCommand
 
-from inspection.models import Inspection
+from inspection.models import CandelaLimit, Inspection
 from inspection.rules import judge
 
 
@@ -20,6 +20,8 @@ class Command(BaseCommand):
             watch.set_password("watch123456")
             watch.save()
         watch.groups.remove(group)
+        # 确保存在一个可保存的坎德拉上限（已有人改过则不覆盖）。
+        CandelaLimit.current()
         if Inspection.objects.exists():
             self.stdout.write("already seeded")
             return
